@@ -34,12 +34,13 @@
 // let result = (a + b < 4) ? '미만' : '이상';
 
 
-let login;
 
-let message = (login == '직원') ? '안녕하세요.' :
-              (login == '임원') ? '환영합니다.' :
-              (login == '') ? '로그인이 필요합니다.' :
-              '';
+// let login;
+
+// let message = (login == '직원') ? '안녕하세요.' :
+//               (login == '임원') ? '환영합니다.' :
+//               (login == '') ? '로그인이 필요합니다.' :
+//               '';
 
 
 
@@ -51,10 +52,19 @@ let message = (login == '직원') ? '안녕하세요.' :
 //       Yes | No
 
 // 영화 봤니?
-let didWatchMovie;
+let didWatchMovie = 'no';
 
 // 영화 볼거니?
-let goingToWatchMovie;
+let goingToWatchMovie = 'yes';
+
+
+const msg = didWatchMovie.includes('yes') ? '그래 ㅋ' :
+            goingToWatchMovie.includes('yes') ? '언제 볼래?' :
+            '그래 ㅋ';
+
+
+
+
 
 
 // if 문(statement)
@@ -66,3 +76,14 @@ let goingToWatchMovie;
 // 조건부 연산자
 
 // 멀티 조건부 연산자 식
+
+
+function render(node, isActive){
+
+  // 조건부 랜더링 
+  let template = `
+    <div>${ isActive ? '안녕' : '잘가' }</div>
+  `
+
+  node.insertAdjacentHTML('beforeend',template);
+}
