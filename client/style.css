@@ -4,3 +4,38 @@ h1 {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+.first {
+  background-color: dodgerblue;
+}
+
+body {
+  overflow: hidden;
+}
+
+.space {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+  }
+
+  .circle {
+    width: 50px;
+    height: 50px;
+    background-color: dodgerblue;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  & div {
+    position: absolute;
+  }
+}
