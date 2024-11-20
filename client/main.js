@@ -1,93 +1,144 @@
-import data from './data/data.js';
 import {
-  addClass,
-  getRandom, 
-  insertLast, 
-  getNode as $, 
+  memo,
+  getNode,
+  getNodes,
+  diceAnimation,
+  insertLast,
+  attr,
+  endScroll,
   clearContents,
-  isNumber,
-  removeClass,
-  showAlert,
-  isNumericString,
-  shake,
-  copy,
- } from './lib/index.js'
+} from "./lib/index.js";
+
+
+
+// [주사위 굴리기 버튼을 누르면 주사위가]
+// 1. 주사위 굴리기 버튼을 선택하기
+// 2. 클릭 이벤트 바인딩 
+
+
+// [애니메이션이 될 수 있도록 만들어 주세요]
+// 1. setInterval
+// 2. diceAnimation()
+
+
+
+// [같은 버튼 눌렀을 때 ]
+// 1. 상태 변수 true | false
+// 2. 조건 처리 
+
+// [애니메이션이 재생 or 정지] 
+// 1. setInterval
+// 2. clearInterval ( scope )
+
+
+
+// [기록 버튼을 누르면] 
+// recordButton에 클릭 이벤트 바인딩
+
+// [table이 등장] 
+// recordListWrapper에 hidden 속성 제어하기
+
+
+
+// [table 안쪽에 tr 태그 렌더링] 
+// 1. 태그 만들기
+// 2. insertLast 함수 사용하기 (tbody 안쪽에 렌더링)
+
+// [table 안쪽에 tr 태그에 데이터를 넣고 렌더링] 
+// 
+// 
+
+
+
+// [Item의 갯수가 많아짐에 따라 스크롤을 제일 하단으로 올 수 있도록] 
+// 
+// 
+
+// [reset 버튼을 눌렀을 때 모든 항목 초기화] 
+// 
+// 
+
+
+{/* <tr>
+  <td>0</td>
+  <td>5</td>
+  <td>5</td>
+</tr> */}
+
+
+const [rollingButton, recordButton, resetButton] = getNodes('.buttonGroup > button'); // 유사배열 -> 구조분해할당 가능
+const recordListWrapper = getNode('.recordListWrapper');
+
+let count = 1; // 회차
+let total = 0; // 주사위 눈 총합
+
+
+
+function createItem(value) {
+  return `
+    <tr>
+      <td>${count++}</td>
+      <td>${value}</td>
+      <td>${total += value}</td>
+    </tr>
+  `;
+}
+
+
+function renderRecordItem() {
+
+  // const diceNum = +attr(getNode('#cube'), 'dice');
+  const diceNum = memo('cube').getAttribute('dice');
+
+  insertLast('tbody', createItem(diceNum));
+
+}
 
 
 
 
-// [phase-1]
-
-// 1. 주접 떨기 버튼을 클릭 하는 함수
-//   - 주접 떨기 버튼 가져오기
-//   - 이벤트 연결
-
-// 2. input 값 가져오기 
-//   - 콘솔에 출력
-
-// 3. data 함수에서 주접 1개 꺼내기
-//    - n번째 random 주접을 꺼내기
-//    - Math.random()
-
-// 4. result에 랜더링하기
-//    - insertLast()
-
-// [phase-2]
-
-// 5. 예외 처리
-//    - 이름이 없을 경우 콘솔에 에러 출력 => result에 결과값 나오면 안됨
-//    - 숫자만 들어오면 콘솔에 에러 출력
-
-
-
-const submit = $('#submit');
-const nameField = $('#nameField');
-const result = $('.result');
-
-
-function handleSubmit(e){
-  e.preventDefault();
-
-  const name = nameField.value;
-  const list = data(name);
-  const pick = list[getRandom(list.length)];
-
-  // 빈문자 입력한 경우 예외처리
-  if (!name || name.replaceAll(' ', '') === '') {
-
-    showAlert('.alert-error', '공백은 허용하지 않습니다', 1200);
-
-    // addClass(nameField, 'shake');
-    shake(nameField);
-
-    return;
-
-  }
+const handleRollingDice = (() => {
   
-  // 숫자만 입력한 경우 예외처리
-  if (!isNumericString(name)) {
+  let isClicked = false;
+  let stopAnimation;
 
-    showAlert('.alert-error', '정확한 이름을 입력해주세요', 1200);
-    return;
-
+  return () => { // isClicked, stopAnimation 변수 보호 위해 클로저 생성
+    if (!isClicked) {
+      stopAnimation = setInterval(diceAnimation, 200);
+      recordButton.disabled = true;
+      resetButton.disabled = true;
+    } else {
+      clearInterval(stopAnimation);
+      recordButton.disabled = false;
+      resetButton.disabled = false;
+    }
+  
+    isClicked = !isClicked; // 토글
   }
 
-  clearContents(result);
-  insertLast(result, pick);
+})(); // 함수 본문을 리턴하기 때문에 addEventListener 줄에서 다시 실행해줘야함 -> 즉시실행함수(IIFE) 만들면 그러지 않아도 됨
+
+
+const handleRecord = () => {
+  recordListWrapper.hidden = false;
+
+  renderRecordItem();
+
+  endScroll(recordListWrapper);
 }
 
 
-function handleCopy() {
-  const text = this.textContent;
+const handleReset = () => {
+  recordListWrapper.hidden = true;
 
-  copy(text)
-  .then(() => {
-    showAlert('.alert-success', '클립보드 복사 완료!');
-  })
+  clearContents('tbody');
+
+  count = 1;
+  total = 0;
 }
 
 
 
-
-submit.addEventListener('click', handleSubmit);
-result.addEventListener('click', handleCopy);
+rollingButton.addEventListener('click', handleRollingDice);
+recordButton.addEventListener('click', handleRecord);
+resetButton.addEventListener('click', handleReset);
