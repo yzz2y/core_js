@@ -13,6 +13,7 @@ const types = {
 
 const dom = {
   getNode:true,
+  getNodes:true,
   insertLast:true
 }
 
