@@ -1,87 +1,93 @@
-// import {$, $s} from './lib/dom/$.js';
-// import {insertLast} from './lib/dom/insert.js';
-// import clearContents from './lib/dom/clearContents.js';
-
+import data from './data/data.js';
 import {
-  getNode as $,
+  addClass,
+  getRandom, 
+  insertLast, 
+  getNode as $, 
   clearContents,
-  insertLast,
-} from './lib/index.js';
+  isNumber,
+  removeClass,
+  showAlert,
+  isNumericString,
+  shake,
+  copy,
+ } from './lib/index.js'
 
 
 
 
-function phase1() {
-  // 숫자랑 숫자 넣으면 자동으로 합이 계산되어 나오도록
-  // clear -> 다 없어지도록
+// [phase-1]
 
-  // 1. input 선택하기
-  // 2. input 이벤트 바인딩
-  // 3. input의 value 값 가져오기
-  // 4. 숫자 더하기
-  // 5. result에 출력하기
+// 1. 주접 떨기 버튼을 클릭 하는 함수
+//   - 주접 떨기 버튼 가져오기
+//   - 이벤트 연결
+
+// 2. input 값 가져오기 
+//   - 콘솔에 출력
+
+// 3. data 함수에서 주접 1개 꺼내기
+//    - n번째 random 주접을 꺼내기
+//    - Math.random()
+
+// 4. result에 랜더링하기
+//    - insertLast()
+
+// [phase-2]
+
+// 5. 예외 처리
+//    - 이름이 없을 경우 콘솔에 에러 출력 => result에 결과값 나오면 안됨
+//    - 숫자만 들어오면 콘솔에 에러 출력
 
 
-  const firstInput = $('#firstNumber');
-  const secondInput = $('#secondNumber');
-  const clear = $('#clear');
-  const result = $('.result');
+
+const submit = $('#submit');
+const nameField = $('#nameField');
+const result = $('.result');
 
 
+function handleSubmit(e){
+  e.preventDefault();
 
-  function handleInput() {
-    const firstValue = +firstInput.value;
-    const secondValue = +secondInput.value;
+  const name = nameField.value;
+  const list = data(name);
+  const pick = list[getRandom(list.length)];
 
-    result.textContent = firstValue + secondValue;
+  // 빈문자 입력한 경우 예외처리
+  if (!name || name.replaceAll(' ', '') === '') {
+
+    showAlert('.alert-error', '공백은 허용하지 않습니다', 1200);
+
+    // addClass(nameField, 'shake');
+    shake(nameField);
+
+    return;
+
+  }
+  
+  // 숫자만 입력한 경우 예외처리
+  if (!isNumericString(name)) {
+
+    showAlert('.alert-error', '정확한 이름을 입력해주세요', 1200);
+    return;
+
   }
 
-  function handleClear(e) {
-    e.preventDefault();
-
-    clearContents(firstInput);
-    clearContents(secondInput);
-    result.textContent = '-';
-  }
+  clearContents(result);
+  insertLast(result, pick);
+}
 
 
+function handleCopy() {
+  const text = this.textContent;
 
-  firstInput.addEventListener('input', handleInput);
-  secondInput.addEventListener('input', handleInput);
-  clear.addEventListener('click', handleClear);
+  copy(text)
+  .then(() => {
+    showAlert('.alert-success', '클립보드 복사 완료!');
+  })
 }
 
 
 
-// 이벤트 위임 이용
-function phase2() {
-  const calculator = $('.calculator'); // 이벤트 위임을 위해 firstInput과 secondInput의 '부모'인 form 태그 선택
-  const result = $('.result');
-  const clear = $('#clear');
 
-  const numberInputs = [...document.querySelectorAll('input:not(#clear)')]; // 두 input을 유사배열처럼 관리하기 위해 (버튼도 input이어서 버튼은 제외)
-
-
-  function handleInput() {
-    const total = numberInputs.reduce((acc, cur) => {acc + Number(cur.value)}, 0); // input으로 들어온 값은 문자열 -> 숫자로 변환 필요
-
-    clearContents(result);
-    insertLast(result, total);
-  }
-
-  function handleClear(e) {
-    e.preventDefault();
-
-    // numberInputs.forEach((input) => {clearContents(input)});
-    numberInputs.forEach((clearContents)); // input이 중복되면 인자로 함수 넣어주기 가능
-
-    result.textContent = '-';
-  }
-
-
-  calculator.addEventListener('input', handleInput);
-  clear.addEventListener('click', handleClear);
-}
-
-
-phase2(); // 실행부
+submit.addEventListener('click', handleSubmit);
+result.addEventListener('click', handleCopy);
