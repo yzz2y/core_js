@@ -8,7 +8,8 @@ import s from '/src/lit/test.css?inline';
 class TodoList extends LitElement {
 
   static properties = {
-     _listItems:{state:true}
+     _listItems:{state:true},
+     hideCompleted:{}
   }
 
   static styles = css /* css */`
@@ -25,6 +26,7 @@ class TodoList extends LitElement {
       {text: '독서하기', completed: true},
       {text: '영화보기', completed: false}
     ]
+    this.hideCompleted = false;
   }
 
   get input(){
@@ -49,12 +51,21 @@ class TodoList extends LitElement {
 
   render(){
     
-    return html /* html */` 
-    <style>${s}</style>
-      <h2 class="title">To Do List</h2>
+
+    const items = this.hideCompleted
+    ? this._listItems.filter( item => !item.completed)
+    : this._listItems
+
+
+    const finishMessage = html `
+      <p>오예 끝났다~!~!</p>
+    `
+
+
+    const todos = html`
       <ul>
         ${ 
-          this._listItems.map((item) => 
+          items.map((item) => 
             html`
           <li
             class="${item.completed ? 'completed' : '' }"
@@ -63,14 +74,39 @@ class TodoList extends LitElement {
           </li>`
           ) 
         }
-      </ul>    
+      </ul>
+    `
+
+
+
+    return html /* html */` 
+    <style>${s}</style>
+      <h2 class="title">To Do List</h2>
+          
       <label id="newItem">
         <input class="newItem" type="text" id="newItem" aria-label="새로운 아이템"/>
       </label> 
       <button type="button" @click=${this.addTodoItem}>추가</button>
+      
+      <hr />
+      
+      <label >
+        <input 
+          type="checkbox"
+          @change=${this.setHideCompleted}
+        />
+        hide completed
+      </label>
     `
   }
 
+
+  setHideCompleted(e){
+    this.hideCompleted = e.target.checked;
+    console.log( this.hideCompleted );
+    
+  }
+  
 }
 
 
