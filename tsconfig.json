@@ -1,0 +1,13 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ESNext", // 최신버전으로 컴파일
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "module": "ESNext", // 최신버전으로 내보내기
+    "moduleDetection": "force",
+    "strict": true,
+    "noImplicitAny": false, // any 에러 끄기
+  }
+}
